@@ -1,0 +1,8 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: override
+          uri: http://docker-app.com
+          predicates:
+          - Path=/**

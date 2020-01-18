@@ -1,0 +1,53 @@
+server:
+  port: ${PORT_NUMBER:8080}
+  servlet:
+    session:
+      cookie:
+        name: GATEWAY_SESSION_ID
+        http-only: true
+        path: /
+        max-age: 3600
+        domain: localhost
+
+
+management:
+  endpoints:
+    web:
+      cors:
+        allow-credentials: true
+        allowed-headers:
+        - Date
+        - Content-Type
+        - Accept
+        - X-Requested-With
+        - Authorization
+        - From
+        - X-Auth-Token
+        - Request-Id
+        exposed-headers:
+        - Set-Cookie
+
+spring:
+  cloud:
+    gateway:
+      default-filters:
+      - TokenRelay
+      routes:
+        - id: webserver
+          uri: http://webserver:8081
+          predicates:
+          - Path=/home/**
+  security:
+    oauth2:
+      client:
+        registration:
+          okta:
+            client-id: ${OKTA_GATEWAY_CLIENT_ID}
+            client-secret: ${OKTA_GATEWAY_CLIENT_SECRET}
+        provider:
+          okta:
+            authorization-uri: ${OKTA_DEV_BASE_URI}/oauth2/default/v1/authorize
+            token-uri: ${OKTA_DEV_BASE_URI}/oauth2/default/v1/token
+            user-info-uri: ${OKTA_DEV_BASE_URI}/oauth2/default/v1/userinfo
+            user-name-attribute: sub
+            jwk-set-uri: ${OKTA_DEV_BASE_URI}/oauth2/default/v1/keys
